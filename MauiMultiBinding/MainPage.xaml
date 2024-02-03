@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converter="clr-namespace:MauiMultiBinding.Converter"
+             x:Class="MauiMultiBinding.MainPage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converter:BoxViewVisibilityConverter x:Key="BoxViewVisibilityConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <CollectionView ItemsSource="{Binding Products}"
+                    x:Name="MultiBindingCollectionView"
+                    RemainingItemsThreshold="1"
+                    RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}">
+        <CollectionView.ItemTemplate>
+            <DataTemplate>
+                <Grid Padding="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Grid.Column="0" Source="{Binding ImageUrl}" Aspect="AspectFill"/>
+                    <StackLayout Grid.Column="1" Orientation="Vertical" Spacing="10">
+                        <Label Text="{Binding Name}" FontAttributes="Bold"/>
+                        <Label Text="{Binding Description}"/>
+                        <BoxView Color="Black" HeightRequest="2" >
+                            <BoxView.IsVisible>
+                                <MultiBinding Converter="{StaticResource BoxViewVisibilityConverter}">
+                                    <Binding Path="BindingContext.Products" Source="{x:Reference MultiBindingCollectionView}" />
+                                    <Binding Path="." />
+                                    <Binding Path="BindingContext.TotalProducts" Source="{x:Reference MultiBindingCollectionView}" />
+                                </MultiBinding>
+                            </BoxView.IsVisible>
+                        </BoxView>
+                    </StackLayout>
+                </Grid>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+</ContentPage>
